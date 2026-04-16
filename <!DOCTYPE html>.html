@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration System</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #0f4c81;
+      --primary-2: #1d6fb8;
+      --border: #dbe3ef;
+      --success: #0f9d58;
+      --danger: #d93025;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      padding: 20px 24px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    nav button {
+      border: none;
+      background: rgba(255,255,255,0.18);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    nav button.active,
+    nav button:hover {
+      background: white;
+      color: var(--primary);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px 40px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 76, 129, 0.06);
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat {
+      background: #eef5fc;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 26px;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      background: white;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn:hover { background: var(--primary-2); }
+
+    .btn.secondary {
+      background: #e8eef7;
+      color: var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e8f5ec;
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .danger { color: var(--danger); }
+    .muted { color: var(--muted); }
+
+    .course-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .course-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 24px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 860px) {
+      .hero, .row, .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <h1>Student Registration System</h1>
+        <p>Advisor management, course planning, and student registration in one place.</p>
+      </div>
+    </div>
+    <nav>
+      <button class="tab active" data-page="home">Home</button>
+      <button class="tab" data-page="register">Student Registration</button>
+      <button class="tab" data-page="courses">Courses</button>
+      <button class="tab" data-page="advisor">Advisor Dashboard</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="page active">
+      <div class="hero">
+        <div class="card">
+          <h2>Welcome</h2>
+          <p>
+            This website is designed to help advisors and schools keep track of students,
+            manage course offerings, and make semester planning easier without needing XAMPP or a database server.
+          </p>
+          <div class="stats">
+            <div class="stat">
+              <strong id="studentCount">0</strong>
+              Students
+            </div>
+            <div class="stat">
+              <strong id="courseCount">0</strong>
+              Courses
+            </div>
+            <div class="stat">
+              <strong id="registrationCount">0</strong>
+              Registrations
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Project Purpose</h2>
+          <ul>
+            <li>Help advisors manage multiple students.</li>
+            <li>Publish available courses by semester.</li>
+            <li>Track student schedules in one place.</li>
+            <li>Save time during Fall and Spring registration.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="register" class="page">
+      <div class="grid">
+        <div class="card">
+          <h2>Student Registration Form</h2>
+          <form id="studentForm">
+            <div class="row">
+              <input type="text" id="studentName" placeholder="Student Name" required />
+              <input type="text" id="studentId" placeholder="Student ID" required />
+            </div>
+            <div class="row">
+              <input type="email" id="studentEmail" placeholder="Student Email" required />
+              <select id="studentSemester" required>
+                <option value="">Select Semester</option>
+                <option>Fall 2026</option>
+                <option>Spring 2027</option>
+                <option>Fall 2027</option>
+              </select>
+            </div>
+            <select id="selectedCourse" required></select>
+            <textarea id="studentNotes" rows="4" placeholder="Advisor Notes"></textarea>
+            <button class="btn" type="submit">Register Student</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Recent Registrations</h2>
+          <div id="registrationTableWrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="courses" class="page">
+      <div class="grid">
+        <div class="card">
+          <h2>Add a Course</h2>
+          <form id="courseForm">
+            <div class="row">
+              <input type="text" id="courseCode" placeholder="Course Code" required />
+              <input type="text" id="courseTitle" placeholder="Course Title" required />
+            </div>
+            <div class="row">
+              <select id="courseSemester" required>
+                <option value="">Select Semester</option>
+                <option>Fall 2026</option>
+                <option>Spring 2027</option>
+                <option>Fall 2027</option>
+              </select>
+              <input type="text" id="courseInstructor" placeholder="Instructor" required />
+            </div>
+            <button class="btn" type="submit">Add Course</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Course Offerings</h2>
+          <div id="courseList" class="course-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="advisor" class="page">
+      <div class="card">
+        <h2>Advisor Dashboard</h2>
+        <p class="muted">Track students, see their selected courses, and keep registration organized.</p>
+        <div id="studentTableWrap"></div>
+      </div>
+    </section>
+
+    <p class="footer-note">This version runs with plain HTML, CSS, and JavaScript, and stores data in your browser using localStorage.</p>
+  </main>
+
+  <script>
+    const defaultCourses = [
+      { code: 'FIN-301', title: 'Corporate Finance', semester: 'Fall 2026', instructor: 'Prof. Smith' },
+      { code: 'MKT-315', title: 'Consumer Behavior', semester: 'Fall 2026', instructor: 'Prof. Johnson' },
+      { code: 'BA-220', title: 'Business Analytics', semester: 'Spring 2027', instructor: 'Prof. Lee' }
+    ];
+
+    const load = (key, fallback) => JSON.parse(localStorage.getItem(key)) || fallback;
+    const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
+    let courses = load('srs_courses', defaultCourses);
+    let registrations = load('srs_registrations', []);
+
+    const tabs = document.querySelectorAll('.tab');
+    const pages = document.querySelectorAll('.page');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        pages.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.page).classList.add('active');
+      });
+    });
+
+    function updateCounts() {
+      document.getElementById('studentCount').textContent = new Set(registrations.map(r => r.studentId)).size;
+      document.getElementById('courseCount').textContent = courses.length;
+      document.getElementById('registrationCount').textContent = registrations.length;
+    }
+
+    function renderCourseDropdown() {
+      const select = document.getElementById('selectedCourse');
+      select.innerHTML = '<option value="">Select a Course</option>' +
+        courses.map((course, index) => `<option value="${index}">${course.code} - ${course.title} (${course.semester})</option>`).join('');
+    }
+
+    function renderCourses() {
+      const wrap = document.getElementById('courseList');
+      if (!courses.length) {
+        wrap.innerHTML = '<p class="muted">No courses added yet.</p>';
+        return;
+      }
+      wrap.innerHTML = courses.map(course => `
+        <div class="course-item">
+          <div>
+            <strong>${course.code}</strong> - ${course.title}<br>
+            <span class="muted">${course.semester} | ${course.instructor}</span>
+          </div>
+          <span class="badge">Available</span>
+        </div>
+      `).join('');
+    }
+
+    function renderRegistrations() {
+      const wrap = document.getElementById('registrationTableWrap');
+      if (!registrations.length) {
+        wrap.innerHTML = '<p class="muted">No registrations yet.</p>';
+        return;
+      }
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Course</th>
+              <th>Semester</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${registrations.slice().reverse().map(r => `
+              <tr>
+                <td>${r.name}</td>
+                <td>${r.studentId}</td>
+                <td>${r.courseCode}</td>
+                <td>${r.semester}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderStudents() {
+      const wrap = document.getElementById('studentTableWrap');
+      if (!registrations.length) {
+        wrap.innerHTML = '<p class="muted">No student records yet.</p>';
+        return;
+      }
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Student ID</th>
+              <th>Email</th>
+              <th>Course</th>
+              <th>Semester</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${registrations.map(r => `
+              <tr>
+                <td>${r.name}</td>
+                <td>${r.studentId}</td>
+                <td>${r.email}</td>
+                <td>${r.courseCode} - ${r.courseTitle}</td>
+                <td>${r.semester}</td>
+                <td>${r.notes || '<span class="muted">None</span>'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    document.getElementById('courseForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const course = {
+        code: document.getElementById('courseCode').value.trim(),
+        title: document.getElementById('courseTitle').value.trim(),
+        semester: document.getElementById('courseSemester').value,
+        instructor: document.getElementById('courseInstructor').value.trim()
+      };
+      courses.push(course);
+      save('srs_courses', courses);
+      e.target.reset();
+      renderAll();
+    });
+
+    document.getElementById('studentForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const courseIndex = document.getElementById('selectedCourse').value;
+      const chosenCourse = courses[courseIndex];
+      if (!chosenCourse) return;
+
+      const registration = {
+        name: document.getElementById('studentName').value.trim(),
+        studentId: document.getElementById('studentId').value.trim(),
+        email: document.getElementById('studentEmail').value.trim(),
+        semester: document.getElementById('studentSemester').value,
+        courseCode: chosenCourse.code,
+        courseTitle: chosenCourse.title,
+        notes: document.getElementById('studentNotes').value.trim()
+      };
+
+      registrations.push(registration);
+      save('srs_registrations', registrations);
+      e.target.reset();
+      renderAll();
+    });
+
+    function renderAll() {
+      renderCourseDropdown();
+      renderCourses();
+      renderRegistrations();
+      renderStudents();
+      updateCounts();
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
